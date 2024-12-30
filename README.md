@@ -14,3 +14,10 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## configuração do projeto firebase links
+- [storage](https://pub.dev/packages/firebase_storage/install)
+- [core](https://pub.dev/packages/firebase_core)
+- [auth](https://pub.dev/packages/firebase_auth)
+- [firebase firestore](https://pub.dev/packages/cloud_firestore) 
+
