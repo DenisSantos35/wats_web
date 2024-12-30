@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wats_web/utils/palete_colors.dart';
@@ -10,13 +11,49 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  TextEditingController _controllerName =
+  final TextEditingController _controllerName =
       TextEditingController(text: "Dênis Santos");
-  TextEditingController _controllerEmail =
+  final TextEditingController _controllerEmail =
       TextEditingController(text: "denis@gmail.com");
-  TextEditingController _controllerPassword =
+  final TextEditingController _controllerPassword =
       TextEditingController(text: "1234567");
   bool _createUser = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  _validateFields() async {
+    String name = _controllerName.text;
+    String email = _controllerEmail.text;
+    String password = _controllerPassword.text;
+
+    if (email.isNotEmpty && email.contains("@")) {
+      if (password.isNotEmpty && password.length > 6) {
+        if (_createUser) {
+          //Cadastro
+          if (name.isNotEmpty && name.length >= 3) {
+            await _auth
+                .createUserWithEmailAndPassword(
+              email: email,
+              password: password,
+            )
+                .then((auth) {
+              //upload
+              String? idUsuario = auth.user?.uid;
+              print("Usuário cadastrado: $idUsuario");
+            });
+          } else {
+            print("Nome inváido, digite ao menos 3 caracteres");
+          }
+        } else {
+          //Login
+        }
+      } else {
+        print("Senha inválida");
+      }
+    } else {
+      print("Email inválido");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +161,9 @@ class _LoginState extends State<Login> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  _validateFields();
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: PaleteColors.primaryColor,
                                   shape: RoundedRectangleBorder(
