@@ -21,3 +21,6 @@ samples, guidance on mobile development, and a full API reference.
 - [auth](https://pub.dev/packages/firebase_auth)
 - [firebase firestore](https://pub.dev/packages/cloud_firestore) 
 
+## pacote para arquivos e imagens 
+-[file_picker](https://pub.dev/packages/file_picker)
+

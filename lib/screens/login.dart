@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wats_web/utils/palete_colors.dart';
@@ -18,8 +22,39 @@ class _LoginState extends State<Login> {
   final TextEditingController _controllerPassword =
       TextEditingController(text: "1234567");
   bool _createUser = false;
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirebaseStorage _storage = FirebaseStorage.instance;
+  Uint8List? _selectImageFile;
+
+  _selectImage() async {
+    //captura imagem selecionada e armazena em resultado
+    //select file
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+
+    // recover file
+    setState(() {
+      _selectImageFile = result?.files.single.bytes;
+      ByteBuffer buffer = _selectImageFile!.buffer;
+      print("arquivo: ${buffer}");
+      Uint8List teste = Uint8List.view(buffer);
+      print("arquivo: ${teste}");
+    });
+  }
+
+  // _uploadImage(String idUser) {
+  //   //promove a imagem para ser reconhecido pelo dart
+  //   Uint8List? selectFile = _selectImageFile;
+  //   if (selectFile != null) {
+  //     Reference imagePerfilRef = _storage.ref("imagens/perfil/$idUser.jpg");
+  //     UploadTask uploadTask = imagePerfilRef.putData(selectFile);
+
+  //     uploadTask.whenComplete(() async {
+  //       String linkImage = await uploadTask.snapshot.ref.getDownloadURL();
+  //       print("link da imagem: $linkImage");
+  //     });
+  //   }
+  // }
 
   _validateFields() async {
     String name = _controllerName.text;
@@ -29,20 +64,27 @@ class _LoginState extends State<Login> {
     if (email.isNotEmpty && email.contains("@")) {
       if (password.isNotEmpty && password.length > 6) {
         if (_createUser) {
-          //Cadastro
-          if (name.isNotEmpty && name.length >= 3) {
-            await _auth
-                .createUserWithEmailAndPassword(
-              email: email,
-              password: password,
-            )
-                .then((auth) {
-              //upload
-              String? idUsuario = auth.user?.uid;
-              print("Usuário cadastrado: $idUsuario");
-            });
+          if (_selectImageFile != null) {
+            //Cadastro
+            if (name.isNotEmpty && name.length >= 3) {
+              await _auth
+                  .createUserWithEmailAndPassword(
+                email: email,
+                password: password,
+              )
+                  .then((auth) {
+                //upload
+                String? idUser = auth.user?.uid;
+                //print("Usuário cadastrado: $idUsuario");
+                // if (idUser != null) {
+                //   _uploadImage(idUser);
+                // }
+              });
+            } else {
+              print("Nome inváido, digite ao menos 3 caracteres");
+            }
           } else {
-            print("Nome inváido, digite ao menos 3 caracteres");
+            print("Selecione uma imagem");
           }
         } else {
           //Login
@@ -99,12 +141,19 @@ class _LoginState extends State<Login> {
                             Visibility(
                               visible: _createUser,
                               child: ClipOval(
-                                child: Image.asset(
-                                  "image/perfil.png",
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: _selectImageFile != null
+                                    ? Image.memory(
+                                        _selectImageFile!,
+                                        width: 120,
+                                        height: 120,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        "image/perfil.png",
+                                        width: 120,
+                                        height: 120,
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                             ),
                             const SizedBox(
@@ -117,7 +166,7 @@ class _LoginState extends State<Login> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(8))),
-                                onPressed: () {},
+                                onPressed: _selectImage,
                                 child: const Text("Selecionar foto"),
                               ),
                             ),
