@@ -46,6 +46,12 @@ class _LoginState extends State<Login> {
           }
         } else {
           //Login
+          await _auth
+              .signInWithEmailAndPassword(email: email, password: password)
+              .then((auth) {
+            String? email = auth.user?.email;
+            print('Usuario cadastrado: $email');
+          });
         }
       } else {
         print("Senha inválida");
