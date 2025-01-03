@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:wats_web/routes.dart';
 import 'package:wats_web/screens/login.dart';
 
 void main() async {
@@ -14,6 +15,8 @@ void main() async {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: "WhatsApp Web",
-    home: Login(),
+    //home: Login(),
+    initialRoute: "/",
+    onGenerateRoute: Routes.generateRoute,
   ));
 }

@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wats_web/models/user.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 
 class Login extends StatefulWidget {
@@ -24,6 +26,7 @@ class _LoginState extends State<Login> {
   bool _createUser = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   //final FirebaseStorage _storage = FirebaseStorage.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Uint8List? _selectImageFile;
 
   _selectImage() async {
@@ -35,26 +38,34 @@ class _LoginState extends State<Login> {
     // recover file
     setState(() {
       _selectImageFile = result?.files.single.bytes;
-      ByteBuffer buffer = _selectImageFile!.buffer;
-      print("arquivo: ${buffer}");
-      Uint8List teste = Uint8List.view(buffer);
-      print("arquivo: ${teste}");
+      //forma de converter para buffer e desconverter
+      // ByteBuffer buffer = _selectImageFile!.buffer;
+      // print("arquivo: ${buffer}");
+      // Uint8List teste = Uint8List.view(buffer);
+      // print("arquivo: ${teste}");
     });
   }
 
-  // _uploadImage(String idUser) {
-  //   //promove a imagem para ser reconhecido pelo dart
-  //   Uint8List? selectFile = _selectImageFile;
-  //   if (selectFile != null) {
-  //     Reference imagePerfilRef = _storage.ref("imagens/perfil/$idUser.jpg");
-  //     UploadTask uploadTask = imagePerfilRef.putData(selectFile);
+  _uploadImage(Users user) {
+    //promove a imagem para ser reconhecido pelo dart
+    Uint8List? selectFile = _selectImageFile;
+    if (selectFile != null) {
+      ByteBuffer buffer = selectFile.buffer;
+      user.urlImage = buffer.toString();
+      final usersRef = _firestore.collection("users");
+      usersRef.doc(user.idUser).set(user.toMap()).then((value) {
+        //send user for home page
+        Navigator.pushReplacementNamed(context, "/home");
+      });
+      // Reference imagePerfilRef = _storage.ref("imagens/perfil/$idUser.jpg");
+      // UploadTask uploadTask = imagePerfilRef.putData(selectFile);
 
-  //     uploadTask.whenComplete(() async {
-  //       String linkImage = await uploadTask.snapshot.ref.getDownloadURL();
-  //       print("link da imagem: $linkImage");
-  //     });
-  //   }
-  // }
+      // uploadTask.whenComplete(() async {
+      //   String linkImage = await uploadTask.snapshot.ref.getDownloadURL();
+      //   print("link da imagem: $linkImage");
+      // });
+    }
+  }
 
   _validateFields() async {
     String name = _controllerName.text;
@@ -76,9 +87,10 @@ class _LoginState extends State<Login> {
                 //upload
                 String? idUser = auth.user?.uid;
                 //print("Usuário cadastrado: $idUsuario");
-                // if (idUser != null) {
-                //   _uploadImage(idUser);
-                // }
+                if (idUser != null) {
+                  Users user = Users(idUser, name, email);
+                  _uploadImage(user);
+                }
               });
             } else {
               print("Nome inváido, digite ao menos 3 caracteres");
@@ -93,6 +105,7 @@ class _LoginState extends State<Login> {
               .then((auth) {
             String? email = auth.user?.email;
             print('Usuario cadastrado: $email');
+            Navigator.pushReplacementNamed(context, "/home");
           });
         }
       } else {
