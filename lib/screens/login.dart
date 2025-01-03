@@ -29,6 +29,14 @@ class _LoginState extends State<Login> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Uint8List? _selectImageFile;
 
+  _verifyAuthUser() async {
+    User? userAuth = await _auth.currentUser;
+
+    if (userAuth != null) {
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+  }
+
   _selectImage() async {
     //captura imagem selecionada e armazena em resultado
     //select file
@@ -114,6 +122,12 @@ class _LoginState extends State<Login> {
     } else {
       print("Email inválido");
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _verifyAuthUser();
   }
 
   @override

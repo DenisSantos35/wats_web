@@ -14,10 +14,10 @@ class Routes {
       case "/home":
         return MaterialPageRoute(builder: (_) => Home());
     }
-    return _erroRoute();
+    return _errorRoute();
   }
 
-  static Route<dynamic> _erroRoute() {
+  static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(
         appBar: AppBar(
