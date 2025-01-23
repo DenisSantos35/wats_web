@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -59,7 +60,8 @@ class _LoginState extends State<Login> {
     Uint8List? selectFile = _selectImageFile;
     if (selectFile != null) {
       ByteBuffer buffer = selectFile.buffer;
-      user.urlImage = buffer.toString();
+      String base64String = base64Encode(Uint8List.view(buffer));
+      user.urlImage = base64String;
       final usersRef = _firestore.collection("users");
       usersRef.doc(user.idUser).set(user.toMap()).then((value) {
         //send user for home page

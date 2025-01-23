@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:wats_web/component/contact_list.dart';
 
 class HomeMobile extends StatefulWidget {
   const HomeMobile({super.key});
@@ -11,6 +11,7 @@ class HomeMobile extends StatefulWidget {
 
 class _HomeMobileState extends State<HomeMobile> {
   FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -48,8 +49,9 @@ class _HomeMobileState extends State<HomeMobile> {
                 Center(
                   child: Text("Conversas"),
                 ),
-                Center(
-                  child: Text("Contatos"),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: ContactList(),
                 ),
               ],
             ),

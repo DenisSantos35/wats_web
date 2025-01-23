@@ -7,8 +7,10 @@ class Users {
   String name;
   String email;
   String urlImage;
+  Uint8List? imageByte;
 
-  Users(this.idUser, this.name, this.email, {this.urlImage = ''});
+  Users(this.idUser, this.name, this.email,
+      {this.urlImage = '', this.imageByte});
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {

@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wats_web/routes.dart';
-import 'package:wats_web/screens/login.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 
 final ThemeData defaultTheme = ThemeData(
@@ -12,6 +11,7 @@ final ThemeData defaultTheme = ThemeData(
       actionsIconTheme: IconThemeData(color: Colors.white),
       toolbarTextStyle: TextStyle(color: Colors.white)),
 );
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

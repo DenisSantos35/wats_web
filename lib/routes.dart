@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:wats_web/models/user.dart';
 import 'package:wats_web/screens/home.dart';
 import 'package:wats_web/screens/login.dart';
+
+import 'screens/mensages.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -8,11 +11,13 @@ class Routes {
 
     switch (settings.name) {
       case "/":
-        return MaterialPageRoute(builder: (_) => Login());
+        return MaterialPageRoute(builder: (_) => const Login());
       case "/login":
-        return MaterialPageRoute(builder: (_) => Login());
+        return MaterialPageRoute(builder: (_) => const Login());
       case "/home":
-        return MaterialPageRoute(builder: (_) => Home());
+        return MaterialPageRoute(builder: (_) => const Home());
+      case "/mensages":
+        return MaterialPageRoute(builder: (_) => Mensages(args as Users));
     }
     return _errorRoute();
   }
@@ -21,9 +26,9 @@ class Routes {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Tela não encontrada!"),
+          title: const Text("Tela não encontrada!"),
         ),
-        body: Center(
+        body: const Center(
           child: Text("Tela não encontrada!"),
         ),
       );
