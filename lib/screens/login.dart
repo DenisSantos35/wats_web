@@ -30,13 +30,13 @@ class _LoginState extends State<Login> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Uint8List? _selectImageFile;
 
-  _verifyAuthUser() async {
-    User? userAuth = await _auth.currentUser;
+  // _verifyAuthUser() {
+  //   User? userAuth = _auth.currentUser;
 
-    if (userAuth != null) {
-      Navigator.pushReplacementNamed(context, "/home");
-    }
-  }
+  //   if (userAuth != null) {
+  //     Navigator.pushReplacementNamed(context, "/home");
+  //   }
+  // }
 
   _selectImage() async {
     //captura imagem selecionada e armazena em resultado
@@ -55,13 +55,18 @@ class _LoginState extends State<Login> {
     });
   }
 
-  _uploadImage(Users user) {
+  _uploadImage(Users user) async {
     //promove a imagem para ser reconhecido pelo dart
     Uint8List? selectFile = _selectImageFile;
     if (selectFile != null) {
       ByteBuffer buffer = selectFile.buffer;
       String base64String = base64Encode(Uint8List.view(buffer));
       user.urlImage = base64String;
+
+      //update url and name in the user data
+      await _auth.currentUser?.updateDisplayName(user.name);
+      //await _auth.currentUser?.updatePhotoURL(user.urlImage);
+
       final usersRef = _firestore.collection("users");
       usersRef.doc(user.idUser).set(user.toMap()).then((value) {
         //send user for home page
@@ -126,11 +131,11 @@ class _LoginState extends State<Login> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _verifyAuthUser();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _verifyAuthUser();
+  // }
 
   @override
   Widget build(BuildContext context) {

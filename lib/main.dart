@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wats_web/routes.dart';
@@ -21,12 +22,18 @@ void main() async {
         messagingSenderId: "854375271901",
         projectId: "whatsappweb-bb27a"),
   );
+
+  User? userFirebase = FirebaseAuth.instance.currentUser;
+  String initialUrl = "/";
+  if (userFirebase != null) {
+    initialUrl = "/home";
+  }
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: "WhatsApp Web",
     //home: Login(),
     theme: defaultTheme,
-    initialRoute: "/",
+    initialRoute: initialUrl,
     onGenerateRoute: Routes.generateRoute,
   ));
 }

@@ -1,14 +1,64 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wats_web/models/user.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 
+import '../models/mensage.dart';
+
 class MensagesList extends StatefulWidget {
-  const MensagesList({super.key});
+  final Users sendUser;
+  final Users recipientUser;
+
+  const MensagesList(
+      {super.key, required this.sendUser, required this.recipientUser});
 
   @override
   State<MensagesList> createState() => _MensagesListState();
 }
 
 class _MensagesListState extends State<MensagesList> {
+  TextEditingController _mensageController = TextEditingController();
+  late Users _recipientUser;
+  late Users _sendUser;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  _sendMensage() {
+    String mensageText = _mensageController.text;
+
+    String sendUserId = _sendUser.idUser;
+    String data = Timestamp.now().toString();
+
+    if (mensageText.isNotEmpty) {
+      Mensage mensage =
+          Mensage(idUser: sendUserId, text: mensageText, data: data);
+
+      //salvar mensagem para remetente
+      String recipientUserId = _recipientUser.idUser;
+      _saveMensage(recipientUserId, sendUserId, mensage);
+    }
+  }
+
+  _saveMensage(String recipientId, String sendId, Mensage mensage) {
+    _firestore
+        .collection("mensages")
+        .doc(sendId)
+        .collection(recipientId)
+        .add(mensage.toMap());
+
+    _mensageController.clear();
+  }
+
+  _recoverInitialData() {
+    _sendUser = widget.sendUser;
+    _recipientUser = widget.recipientUser;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _recoverInitialData();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -37,27 +87,28 @@ class _MensagesListState extends State<MensagesList> {
                 //box text circle
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    margin: EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(40),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.insert_emoticon),
-                        SizedBox(
+                        const Icon(Icons.insert_emoticon),
+                        const SizedBox(
                           width: 4,
                         ),
                         Expanded(
                             child: TextField(
-                          decoration: InputDecoration(
+                          controller: _mensageController,
+                          decoration: const InputDecoration(
                             hintText: "Digite uma mensagem",
                             border: InputBorder.none,
                           ),
                         )),
-                        Icon(Icons.attach_file),
-                        Icon(Icons.camera_alt),
+                        const Icon(Icons.attach_file),
+                        const Icon(Icons.camera_alt),
                       ],
                     ),
                   ),
@@ -73,7 +124,7 @@ class _MensagesListState extends State<MensagesList> {
                       color: Colors.white,
                     ),
                     mini: true,
-                    onPressed: () {}),
+                    onPressed: _sendMensage),
               ],
             ),
           )
