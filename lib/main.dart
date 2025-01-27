@@ -7,6 +7,7 @@ import 'package:wats_web/utils/palete_colors.dart';
 final ThemeData defaultTheme = ThemeData(
   primaryColor: PaleteColors.primaryColor,
   appBarTheme: const AppBarTheme(
+      iconTheme: IconThemeData(color: Colors.white),
       backgroundColor: PaleteColors.primaryColor,
       titleTextStyle: TextStyle(color: Colors.white),
       actionsIconTheme: IconThemeData(color: Colors.white),
@@ -30,7 +31,7 @@ void main() async {
   }
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: "WhatsApp Web",
+    title: "Chat",
     //home: Login(),
     theme: defaultTheme,
     initialRoute: initialUrl,

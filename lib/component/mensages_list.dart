@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wats_web/models/conversation.dart';
 import 'package:wats_web/models/user.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 
@@ -21,6 +22,7 @@ class MensagesList extends StatefulWidget {
 class _MensagesListState extends State<MensagesList> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   TextEditingController _mensageController = TextEditingController();
+  ScrollController _scrollController = ScrollController();
   late Users _recipientUser;
   late Users _sendUser;
 
@@ -44,9 +46,38 @@ class _MensagesListState extends State<MensagesList> {
       String recipientUserId = _recipientUser.idUser;
       _saveMensage(recipientUserId, sendUserId, mensage);
 
+      //conversa do destinatario
+      Conversation sendConversation = Conversation(
+          recipientId: recipientUserId, //Denis
+          sendId: sendUserId, //João
+          lastMensage: mensage.text,
+          recipentName: _recipientUser.name,
+          recipientEmail: _recipientUser.email,
+          recipientImageUrl: _recipientUser.urlImage);
+      _saveConversation(sendConversation);
+
       //salvar mensagem para o destinatario
       _saveMensage(sendUserId, recipientUserId, mensage);
+
+      //comversa do remetente
+      Conversation recipientConversation = Conversation(
+          recipientId: sendUserId, //João
+          sendId: recipientUserId, //Denis
+          lastMensage: mensage.text,
+          recipentName: _sendUser.name,
+          recipientEmail: _sendUser.email,
+          recipientImageUrl: _sendUser.urlImage);
+      _saveConversation(recipientConversation);
     }
+  }
+
+  _saveConversation(Conversation conversation) {
+    _firestore
+        .collection("conversations")
+        .doc(conversation.sendId)
+        .collection("last_mensage")
+        .doc(conversation.recipientId)
+        .set(conversation.toMap());
   }
 
   _saveMensage(String recipientId, String sendId, Mensage mensage) {
@@ -79,21 +110,33 @@ class _MensagesListState extends State<MensagesList> {
     _mensageListenerAdd();
   }
 
+  //adiciona todas as alteraçõe feitas no firebase.
   _mensageListenerAdd() {
+    //firebase firestore retorna um Stream<QuerySnapshot> atraves do .snapshot();
     final stream = _firestore
         .collection("mensages")
         .doc(_sendUser.idUser)
         .collection(_recipientUser.idUser)
         .orderBy("data", descending: false)
         .snapshots();
+    // toda e quaquer mudança no firebase e notificado e passado para o stream controller
+    //que fica ouvindo as alterações.
     _streamMensages = stream.listen((data) {
       _streamController.add(data);
+    });
+
+    //aguardo um tempo e realiza uma função
+    //neste caso vamos recuperar o scrollcontroler que está no listview builder
+    // e vamos acessar o ultimo elemento apos o carregamento com os comandos abaixo.
+    Timer(Duration(seconds: 1), () {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
   }
 
   @override
   void dispose() {
     super.dispose();
+    _scrollController.dispose();
     _streamMensages.cancel();
   }
 
@@ -144,6 +187,7 @@ class _MensagesListState extends State<MensagesList> {
                           querySnapshot.docs.toList();
                       return Expanded(
                         child: ListView.builder(
+                            controller: _scrollController,
                             itemCount: querySnapshot.docs.length,
                             itemBuilder: (context, index) {
                               DocumentSnapshot mensage = mensagesList[index];

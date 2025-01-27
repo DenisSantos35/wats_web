@@ -18,7 +18,7 @@ class _HomeMobileState extends State<HomeMobile> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text("WhatsApp"),
+            title: const Text("Chat"),
             actions: [
               IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
               const SizedBox(width: 3.0),
