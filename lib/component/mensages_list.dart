@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wats_web/models/conversation.dart';
 import 'package:wats_web/models/user.dart';
+import 'package:wats_web/utils/convert_data.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 
 import '../models/mensage.dart';
@@ -46,6 +49,14 @@ class _MensagesListState extends State<MensagesList> {
       String recipientUserId = _recipientUser.idUser;
       _saveMensage(recipientUserId, sendUserId, mensage);
 
+      // Uint8List? selectFile = widget.recipientUser.imageByte;
+      // ByteBuffer buffer = selectFile!.buffer;
+      // String base64String = base64Encode(Uint8List.view(buffer));
+      // _recipientUser.urlImage = base64String;
+
+      _recipientUser.urlImage = DeconvertData.decodebase64Encode(
+          data: widget.recipientUser.imageByte);
+
       //conversa do destinatario
       Conversation sendConversation = Conversation(
           recipientId: recipientUserId, //Denis
@@ -59,6 +70,14 @@ class _MensagesListState extends State<MensagesList> {
       //salvar mensagem para o destinatario
       _saveMensage(sendUserId, recipientUserId, mensage);
 
+      // selectFile = widget.sendUser.imageByte;
+      // buffer = selectFile!.buffer;
+      // base64String = base64Encode(Uint8List.view(buffer));
+      // _sendUser.urlImage = base64String;
+
+      _sendUser.urlImage =
+          DeconvertData.decodebase64Encode(data: widget.sendUser.imageByte);
+
       //comversa do remetente
       Conversation recipientConversation = Conversation(
           recipientId: sendUserId, //João
@@ -66,7 +85,7 @@ class _MensagesListState extends State<MensagesList> {
           lastMensage: mensage.text,
           recipentName: _sendUser.name,
           recipientEmail: _sendUser.email,
-          recipientImageUrl: _sendUser.urlImage);
+          recipientImageUrl: widget.sendUser.urlImage);
       _saveConversation(recipientConversation);
     }
   }

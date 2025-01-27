@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wats_web/component/contact_list.dart';
+import 'package:wats_web/component/conversationList.dart';
 
 class HomeMobile extends StatefulWidget {
   const HomeMobile({super.key});
@@ -47,7 +48,9 @@ class _HomeMobileState extends State<HomeMobile> {
             child: TabBarView(
               children: [
                 Center(
-                  child: Text("Conversas"),
+                  child:
+                      //Text("conversas")
+                      Conversationlist(),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),

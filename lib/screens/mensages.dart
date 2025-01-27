@@ -27,23 +27,12 @@ class _MensagesState extends State<Mensages> {
 
     User? loggedUser = _auth.currentUser;
 
-    // var query = await _firestore
-    //     .collection("users")
-    //     .doc(loggedUser?.uid)
-    //     .get()
-    //     .then((_) {});
-
     if (loggedUser != null) {
       String idUser = loggedUser.uid;
       String? name = loggedUser.displayName ?? "";
       String? email = loggedUser.email ?? "";
 
-      // String? buferImage = query.data()!["urlImage"].toString() ?? "";
-      // Uint8List? imageBytes = base64Decode(buferImage);
-
       _sendUser = Users(idUser, name, email, urlImage: "");
-
-      print(_sendUser);
     }
   }
 
