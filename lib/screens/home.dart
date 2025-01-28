@@ -12,7 +12,7 @@ class Home extends StatelessWidget {
     return Responsive(
       mobile: HomeMobile(),
       web: HomeWeb(),
-      tablet: HomeTablet(),
+      tablet: HomeWeb(),
     );
   }
 }
