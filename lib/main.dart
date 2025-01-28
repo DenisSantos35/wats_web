@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:wats_web/routes.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 
@@ -23,6 +24,7 @@ void main() async {
         messagingSenderId: "854375271901",
         projectId: "whatsappweb-bb27a"),
   );
+  await GetStorage.init();
 
   User? userFirebase = FirebaseAuth.instance.currentUser;
   String initialUrl = "/";
