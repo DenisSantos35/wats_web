@@ -4,8 +4,10 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wats_web/models/conversation.dart';
 import 'package:wats_web/models/user.dart';
+import 'package:wats_web/provider/provaider_conversation.dart';
 import 'package:wats_web/utils/convert_data.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 
@@ -129,6 +131,14 @@ class _MensagesListState extends State<MensagesList> {
     _mensageListenerAdd();
   }
 
+  _updateListenerMessage() {
+    Users? recipientUser = context.watch<ProvaiderConversation>().recipientUser;
+    if (recipientUser != null) {
+      _recipientUser = recipientUser;
+      _recoverInitialData();
+    }
+  }
+
   //adiciona todas as alteraçõe feitas no firebase.
   _mensageListenerAdd() {
     //firebase firestore retorna um Stream<QuerySnapshot> atraves do .snapshot();
@@ -163,6 +173,14 @@ class _MensagesListState extends State<MensagesList> {
   void initState() {
     super.initState();
     _recoverInitialData();
+    print("initState");
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateListenerMessage();
+    print("didChangeDependence");
   }
 
   @override

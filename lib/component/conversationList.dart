@@ -6,6 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wats_web/models/user.dart';
+import 'package:wats_web/provider/provaider_conversation.dart';
+import 'package:wats_web/utils/responsive.dart';
+import 'package:provider/provider.dart';
 
 class Conversationlist extends StatefulWidget {
   const Conversationlist({super.key});
@@ -72,6 +75,7 @@ class _ConversationlistState extends State<Conversationlist> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
     return StreamBuilder(
         stream: _streamController.stream,
         builder: (context, snapshot) {
@@ -122,8 +126,13 @@ class _ConversationlistState extends State<Conversationlist> {
 
                     return ListTile(
                       onTap: () {
-                        Navigator.pushNamed(context, "/mensages",
-                            arguments: user);
+                        if (isMobile) {
+                          Navigator.pushNamed(context, "/mensages",
+                              arguments: user);
+                        } else {
+                          context.read<ProvaiderConversation>().recipientUser =
+                              user;
+                        }
                       },
                       leading: CircleAvatar(
                         radius: 25,

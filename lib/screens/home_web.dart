@@ -4,10 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wats_web/component/conversationList.dart';
+import 'package:wats_web/component/mensages_list.dart';
 import 'package:wats_web/models/user.dart';
+import 'package:wats_web/provider/provaider_conversation.dart';
 import 'package:wats_web/utils/convert_data.dart';
 import 'package:wats_web/utils/palete_colors.dart';
 import 'package:wats_web/utils/responsive.dart';
+import 'package:provider/provider.dart';
 
 class HomeWeb extends StatefulWidget {
   const HomeWeb({super.key});
@@ -104,9 +107,11 @@ class _HomeWebState extends State<HomeWeb> {
                         loggedUser: _loggedUser!,
                       ),
                     ),
-                    const Expanded(
+                    Expanded(
                       flex: 10,
-                      child: SideMensageArea(),
+                      child: SideMensageArea(
+                        loggedUser: _loggedUser!,
+                      ),
                     ),
                   ],
                 )),
@@ -124,7 +129,7 @@ class SideConversationArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: PaleteColors.backgroundColorBarLigth,
         border: Border(
           right: BorderSide(
@@ -154,24 +159,24 @@ class SideConversationArea extends StatelessWidget {
                   ),
                 ),
                 //empurra todos os icones para o final
-                Spacer(),
+                const Spacer(),
                 IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.message),
+                  icon: const Icon(Icons.message),
                 ),
                 IconButton(
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
                     Navigator.pushReplacementNamed(context, "/login");
                   },
-                  icon: Icon(Icons.logout),
+                  icon: const Icon(Icons.logout),
                 ),
               ],
             ),
           ),
           //Barra de pesquisa
           Container(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(100),
@@ -180,9 +185,9 @@ class SideConversationArea extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                 ),
-                Expanded(
+                const Expanded(
                   child: TextField(
                     decoration: InputDecoration.collapsed(
                       hintText: "Pesquisar uma conversa",
@@ -196,9 +201,9 @@ class SideConversationArea extends StatelessWidget {
           //Lista de conversas
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               color: Colors.white,
-              child: Conversationlist(),
+              child: const Conversationlist(),
             ),
           )
         ],
@@ -208,16 +213,72 @@ class SideConversationArea extends StatelessWidget {
 }
 
 class SideMensageArea extends StatelessWidget {
-  const SideMensageArea({super.key});
+  final Users loggedUser;
+  const SideMensageArea({super.key, required this.loggedUser});
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final double heigth = MediaQuery.of(context).size.height;
-    return Container(
-      width: width,
-      height: heigth,
-      color: PaleteColors.backgroundColorBarLigth,
-    );
+    Users? recipentUser = context.watch<ProvaiderConversation>().recipientUser;
+    return recipentUser != null
+        ? Column(
+            children: [
+              //Top bar
+              Container(
+                color: PaleteColors.backgroundColorBar,
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.grey,
+                      child: ClipOval(
+                        child: Image.memory(
+                          recipentUser.imageByte!,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      recipentUser.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    //empurra todos os icones para o final
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.search),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.more_vert),
+                    ),
+                  ],
+                ),
+              ),
+
+              //mensage list
+              Expanded(
+                child: MensagesList(
+                    sendUser: loggedUser, recipientUser: recipentUser),
+              )
+            ],
+          )
+        : Container(
+            width: width,
+            height: heigth,
+            color: PaleteColors.backgroundColorBarLigth,
+            child: const Center(
+              child: Text("Nenhum usuário selecionado no momento"),
+            ),
+          );
   }
 }

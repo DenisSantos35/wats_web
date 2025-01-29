@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:wats_web/provider/provaider_conversation.dart';
 import 'package:wats_web/routes.dart';
 import 'package:wats_web/utils/palete_colors.dart';
+import 'package:provider/provider.dart';
 
 final ThemeData defaultTheme = ThemeData(
   primaryColor: PaleteColors.primaryColor,
@@ -31,12 +33,17 @@ void main() async {
   if (userFirebase != null) {
     initialUrl = "/home";
   }
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: "Chat",
-    //home: Login(),
-    theme: defaultTheme,
-    initialRoute: initialUrl,
-    onGenerateRoute: Routes.generateRoute,
-  ));
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ProvaiderConversation(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Chat",
+        //home: Login(),
+        theme: defaultTheme,
+        initialRoute: initialUrl,
+        onGenerateRoute: Routes.generateRoute,
+      ),
+    ),
+  );
 }
