@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:wats_web/provider/provaider_conversation.dart';
 import 'package:wats_web/routes.dart';
@@ -33,11 +34,16 @@ void main() async {
   if (userFirebase != null) {
     initialUrl = "/home";
   }
+
+  //Atalhos
+  // final atalhos = WidgetsApp.defaultShortcuts;
+  // atalhos[LogicalKeySet(LogicalKeyboardKey.space)] = ActivateIntent();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ProvaiderConversation(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        // shortcuts: atalhos,
         title: "Chat",
         //home: Login(),
         theme: defaultTheme,
